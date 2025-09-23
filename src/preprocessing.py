@@ -11,10 +11,10 @@ def one_hot(df, categorical_features):
     res = pd.concat([copy.drop(columns=categorical_features).reset_index(drop=True), encoded.reset_index(drop=True)], axis=1)
     return res
 
-# load data (personal path, needs to be changed)
-default_path = r"../data/dataproject2025.csv"
+def get_data(path=None):
 
-def get_data(path=default_path):
+    default_path = r"../data/dataproject2025.csv"
+    path = path or default_path
 
     df = pd.read_csv(path)
 
