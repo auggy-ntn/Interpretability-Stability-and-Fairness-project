@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 def one_hot(df, categorical_features):
     copy = df.copy()
@@ -12,20 +12,19 @@ def one_hot(df, categorical_features):
     return res
 
 # load data (personal path, needs to be changed)
-path = r"../data/dataproject2025.csv"
+default_path = r"../data/dataproject2025.csv"
 
-def get_data():
+def get_data(path=default_path):
 
     df = pd.read_csv(path)
 
     # rename index column and drop old index column
-    df['Index'] = df['Unnamed: 0']
     df = df.drop(columns=['Unnamed: 0'])
-    #df.info()
+    
     # number of missing values
     df=df.replace('nan', np.nan)
     df.drop(index=df[df.isna().any(axis=1)].index, inplace=True)
-    # check
+    
     # separate features, predicted probabilities, predictions and true labels
     prob = df['Predicted probabilities']
     df.drop(columns=['Predicted probabilities'], inplace=True)
@@ -37,5 +36,13 @@ def get_data():
     categorical_features = ['sub_grade', 'purpose', 'home_ownership', 'grade', 'emp_title', 'emp_length']
 
     df_oh = one_hot(df, categorical_features)
-    # df_oh.info()
+
+    oh_cols = df_oh.columns[df_oh.nunique() == 2].tolist()
+    scaler = StandardScaler()
+    
+    binary_cols = df_oh[oh_cols]
+    scaled_cols = scaler.fit_transform(df_oh[df_oh.columns.difference(oh_cols)])
+
+    df_oh = pd.concat([pd.DataFrame(scaled_cols, columns=df_oh.columns.difference(oh_cols)), binary_cols.reset_index(drop=True)], axis=1)
+
     return df_oh, prob, predictions, true_labels
