@@ -30,3 +30,7 @@ models/*.pkl
 
 # Secrets
 .env
+
+
+# Data files
+*.csv
