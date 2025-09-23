@@ -12,9 +12,9 @@ def one_hot(df, categorical_features):
     return res
 
 # load data (personal path, needs to be changed)
-path = r"../data/dataproject2025.csv"
+default_path = r"../data/dataproject2025.csv"
 
-def get_data():
+def get_data(path=default_path):
 
     df = pd.read_csv(path)
 
