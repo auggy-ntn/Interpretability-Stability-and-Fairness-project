@@ -19,8 +19,7 @@ ENV/
 .DS_Store
 
 # Data
-data/
-!data/.gitkeep
+data/dataproject2025.csv
 
 # Models
 models/*.joblib
