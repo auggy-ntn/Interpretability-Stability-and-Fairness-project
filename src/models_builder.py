@@ -29,18 +29,3 @@ class LinearSurrogate:
         plt.xlabel("Coefficient Value")
         plt.title("Feature Importance from Linear Surrogate Model")
         plt.show()
-
-
-# Black Box XGBoost Model Wrapper
-class BlackBoxModel(xgb.XGBClassifier):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-    def fit(self, X, y):
-        super().fit(X, y)
-
-    def predict(self, X):
-        return super().predict(X)
-
-    def predict_proba(self, X):
-        return super().predict_proba(X)
