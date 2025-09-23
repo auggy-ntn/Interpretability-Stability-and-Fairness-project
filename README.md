@@ -2,7 +2,7 @@
 ### Create environment
 
 If using Conda:
-conda env create --name environment_name -f environment.yml
+conda env create -f env.yaml
 
 For pip:
 pip install -r requirements.txt
