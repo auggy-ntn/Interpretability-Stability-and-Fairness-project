@@ -1,9 +1,13 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, StandardScaler
 
+import constants.column_names as cst
 
-def get_preprocessed_data(path=None) -> tuple[pd.DataFrame, pd.Series, pd.Series, pd.Series]:
+
+def get_preprocessed_data(
+    path=None,
+) -> tuple[pd.DataFrame, pd.Series, pd.Series, pd.Series]:
     """
     Preprocesses the dataset by:
     - Dropping unnecessary columns and handling missing values.
@@ -26,41 +30,46 @@ def get_preprocessed_data(path=None) -> tuple[pd.DataFrame, pd.Series, pd.Series
     df = pd.read_csv(path)
 
     # Drop unnecessary columns
-    df = df.drop(columns=['Unnamed: 0', 'sub_grade'])
+    df = df.drop(columns=cst.DROP_COLUMNS)
 
     # Handle missing values
-    df = df.replace('nan', np.nan)
+    df = df.replace("nan", np.nan)
     df.dropna(inplace=True)
 
     # Separate features, predicted probabilities, predictions, and true labels
-    prob = df.pop('Predicted probabilities')
-    predictions = df.pop('Predictions')
-    true_labels = df.pop('target')
-
-    # Define categorical and ordinal features
-    categorical_features = ['purpose', 'home_ownership', 'emp_title', 'emp_length']
-    ordinal_features = ['grade']
+    prob = df.pop("Predicted probabilities")
+    predictions = df.pop("Predictions")
+    true_labels = df.pop("target")
 
     # One-hot encode categorical features
-    encoder = OneHotEncoder(sparse_output=False, drop='first')
-    encoded_cols = encoder.fit_transform(df[categorical_features])
-    encoded_col_names = encoder.get_feature_names_out(categorical_features)
+    encoder = OneHotEncoder(sparse_output=False, drop="first")
+    encoded_cols = encoder.fit_transform(df[cst.CATEGORICAL_COLUMNS])
+    encoded_col_names = encoder.get_feature_names_out(cst.CATEGORICAL_COLUMNS)
     df_encoded = pd.DataFrame(encoded_cols, columns=encoded_col_names, index=df.index)
 
     # Ordinal encode ordinal features
     ordinal_encoder = OrdinalEncoder()
-    df[ordinal_features] = ordinal_encoder.fit_transform(df[ordinal_features])
+    df[cst.ORDINAL_COLUMNS] = ordinal_encoder.fit_transform(df[cst.ORDINAL_COLUMNS])
 
     # Combine encoded features with the rest of the data
-    df = pd.concat([df.drop(columns=categorical_features), df_encoded], axis=1)
+    df = pd.concat([df.drop(columns=cst.CATEGORICAL_COLUMNS), df_encoded], axis=1)
 
     # Standardize numerical features
-    binary_cols = df.loc[:, df.nunique() == 2]
-    continuous_cols = df.loc[:, df.nunique() > 2]
+    binary_cols = df[cst.BINARY_COLUMNS]
+    continuous_cols = df.select_dtypes(include=np.number).drop(
+        columns=cst.BINARY_COLUMNS
+    )
     scaler = StandardScaler()
-    scaled_continuous = pd.DataFrame(scaler.fit_transform(continuous_cols), columns=continuous_cols.columns, index=df.index)
+    scaled_continuous = pd.DataFrame(
+        scaler.fit_transform(continuous_cols),
+        columns=continuous_cols.columns,
+        index=df.index,
+    )
 
     # Combine scaled continuous features with binary features
     df = pd.concat([scaled_continuous, binary_cols], axis=1)
+
+    # Rename columns
+    df.rename(cst.RENAMING_DICT)
 
     return df, prob, predictions, true_labels
