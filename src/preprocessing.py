@@ -6,7 +6,7 @@ import constants.column_names as cst
 
 
 def get_preprocessed_data(
-    path=None,
+    path: str = r"../data/dataproject2025.csv",
 ) -> tuple[pd.DataFrame, pd.Series, pd.Series, pd.Series]:
     """
     Preprocesses the dataset by:
@@ -26,7 +26,7 @@ def get_preprocessed_data(
             - Predictions (pd.Series)
             - True labels (pd.Series)
     """
-    path = r"../data/dataproject2025.csv"
+    # Load dataset
     df = pd.read_csv(path)
 
     # Drop unnecessary columns
