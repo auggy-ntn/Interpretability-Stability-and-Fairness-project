@@ -19,3 +19,8 @@ git clone https://github.com/auggy-ntn/Interpretability-Stability-and-Fairness-p
 uc sync --dev
 ```
 You are all set!
+
+Alternatively, if you don't want to use ```uv```, you can run the following command:
+```zsh
+pip install -r requirements.txt
+```
