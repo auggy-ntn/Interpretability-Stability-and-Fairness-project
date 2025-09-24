@@ -23,7 +23,6 @@ data/dataproject2025.csv
 
 # Models
 models/*.joblib
-models/*.pkl
 
 # Logs
 *.log
