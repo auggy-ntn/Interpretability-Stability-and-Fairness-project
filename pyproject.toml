@@ -28,11 +28,8 @@ requires = ["setuptools>=65", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-where = ["src"]
-include = ["constants*", "fair_credit_scoring*", "models*"]
-
-[tool.hatchling.build.targets.wheel]
-packages = ["src/constants", "src/fair_credit_scoring", "src/models"]
+where = ["."]
+include = ["src*", "models*", "constants*"]
 
 
 ###### Configuration for Ruff linter and formatter ######
@@ -53,3 +50,9 @@ quote-style = "double"
 indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.30.1",
+    "pip>=25.2",
+]
