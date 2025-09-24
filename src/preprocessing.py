@@ -1,51 +1,66 @@
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, StandardScaler
 
 
-def one_hot(df, categorical_features):
-    copy = df.copy()
-    encoder = OneHotEncoder(sparse_output=False, drop='first')
-    encoded_cols = encoder.fit_transform(copy[categorical_features])
-    encoded_col_names = encoder.get_feature_names_out(categorical_features)
-    encoded = pd.DataFrame(encoded_cols, columns=encoded_col_names)
-    res = pd.concat([copy.drop(columns=categorical_features).reset_index(
-        drop=True), encoded.reset_index(drop=True)], axis=1)
-    return res
+def get_preprocessed_data(path=None) -> tuple[pd.DataFrame, pd.Series, pd.Series, pd.Series]:
+    """
+    Preprocesses the dataset by:
+    - Dropping unnecessary columns and handling missing values.
+    - Separating predicted probabilities, predictions, and true labels.
+    - One-hot encoding categorical features.
+    - Ordinal encoding ordinal features.
+    - Standardizing continuous features while keeping binary features unchanged.
 
+    Args:
+        path (str): Path to the dataset CSV file. Defaults to "../data/dataproject2025.csv".
 
-def get_data(path=None):
-
+    Returns:
+        tuple: A tuple containing:
+            - Preprocessed DataFrame (pd.DataFrame)
+            - Predicted probabilities (pd.Series)
+            - Predictions (pd.Series)
+            - True labels (pd.Series)
+    """
     path = r"../data/dataproject2025.csv"
     df = pd.read_csv(path)
 
-    # rename index column and drop old index column
-    df = df.drop(columns=['Unnamed: 0'])
+    # Drop unnecessary columns
+    df = df.drop(columns=['Unnamed: 0', 'sub_grade'])
 
-    # number of missing values
+    # Handle missing values
     df = df.replace('nan', np.nan)
-    df.drop(index=df[df.isna().any(axis=1)].index, inplace=True)
+    df.dropna(inplace=True)
 
-    # separate features, predicted probabilities, predictions and true labels
-    prob = df['Predicted probabilities']
-    df.drop(columns=['Predicted probabilities'], inplace=True)
-    predictions = df['Predictions']
-    df.drop(columns=['Predictions'], inplace=True)
-    true_labels = df['target']
-    df.drop(columns=['target'], inplace=True)
-    # Taking all features into account, one hot encoding
-    categorical_features = ['sub_grade', 'purpose',
-                            'home_ownership', 'grade', 'emp_title', 'emp_length']
+    # Separate features, predicted probabilities, predictions, and true labels
+    prob = df.pop('Predicted probabilities')
+    predictions = df.pop('Predictions')
+    true_labels = df.pop('target')
 
-    df_oh = one_hot(df, categorical_features)
+    # Define categorical and ordinal features
+    categorical_features = ['purpose', 'home_ownership', 'emp_title', 'emp_length']
+    ordinal_features = ['grade']
 
-    oh_cols = df_oh.columns[df_oh.nunique() == 2].tolist()
+    # One-hot encode categorical features
+    encoder = OneHotEncoder(sparse_output=False, drop='first')
+    encoded_cols = encoder.fit_transform(df[categorical_features])
+    encoded_col_names = encoder.get_feature_names_out(categorical_features)
+    df_encoded = pd.DataFrame(encoded_cols, columns=encoded_col_names, index=df.index)
+
+    # Ordinal encode ordinal features
+    ordinal_encoder = OrdinalEncoder()
+    df[ordinal_features] = ordinal_encoder.fit_transform(df[ordinal_features])
+
+    # Combine encoded features with the rest of the data
+    df = pd.concat([df.drop(columns=categorical_features), df_encoded], axis=1)
+
+    # Standardize numerical features
+    binary_cols = df.loc[:, df.nunique() == 2]
+    continuous_cols = df.loc[:, df.nunique() > 2]
     scaler = StandardScaler()
+    scaled_continuous = pd.DataFrame(scaler.fit_transform(continuous_cols), columns=continuous_cols.columns, index=df.index)
 
-    binary_cols = df_oh[oh_cols]
-    scaled_cols = scaler.fit_transform(df_oh[df_oh.columns.difference(oh_cols)])
+    # Combine scaled continuous features with binary features
+    df = pd.concat([scaled_continuous, binary_cols], axis=1)
 
-    df_oh = pd.concat([pd.DataFrame(scaled_cols, columns=df_oh.columns.difference(
-        oh_cols)), binary_cols.reset_index(drop=True)], axis=1)
-
-    return df_oh, prob, predictions, true_labels
+    return df, prob, predictions, true_labels
