@@ -3,6 +3,13 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
 
+def ICE(df, model, feature, val):
+    X = df.copy()
+    X[feature] = val
+    y = model.predict_proba(X)
+    return y
+
+
 def PDF_values(df, model, feature):
     """Compute the Partial Dependence Function (PDF) values for given features.
     Args:
@@ -32,10 +39,8 @@ def PDF_values(df, model, feature):
     PDF = ([], [])
     for val in vals:
         PDF[0].append(val)
-        X = df.copy()
-        X[feature] = val
-        y = model.predict_proba(X)
-        PDF[1].append(y[:, 1].mean())
+        ice = ICE(df, model, feature, val)
+        PDF[1].append(ice[:, 1].mean())
     return PDF
 
 
