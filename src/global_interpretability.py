@@ -42,8 +42,9 @@ def PDF_values(df, model, feature):
     return PDF
 
 
-def PDP_plot(PDF, feature):
+def PDP_plot(df, model, feature):
     """Plot the Partial Dependence Plot (PDP) for given features."""
+    PDF = PDF_values(df, model, feature)
     if len(feature) == 2:
         PDP_plot_2D(PDF, feature)
     else:
