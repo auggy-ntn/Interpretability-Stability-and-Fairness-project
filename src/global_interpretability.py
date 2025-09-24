@@ -3,12 +3,6 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
 
-def ICE(df, model, feature, val):
-    X = df.copy()
-    X[feature] = val
-    y = model.predict_proba(X)
-    return y
-
 
 def PDF_values(df, model, feature):
     """Compute the Partial Dependence Function (PDF) values for given features.
@@ -23,9 +17,10 @@ def PDF_values(df, model, feature):
     # Dual feature case
     if len(feature) == 2:
         feat1, feat2 = feature
-        vals1 = df[feat1].unique()
+        feature_values_1 = df.unique_values(feat1)
+        feature_values_1 = np.sort(feature_values_1)
         PDF = ([], [])
-        for val1 in vals1:
+        for val1 in feature_values_1:
             df1 = df.copy()
             df1[feat1] = val1
             pdf = PDF_values(df1, model, feat2)
@@ -35,12 +30,15 @@ def PDF_values(df, model, feature):
         return PDF
     
     # Single feature case
-    vals = df[feature].unique()
+    feature_values = df.unique_values(feature)
+    feature_values = np.sort(feature_values)
     PDF = ([], [])
-    for val in vals:
+    for val in feature_values:
         PDF[0].append(val)
-        ice = ICE(df, model, feature, val)
-        PDF[1].append(ice[:, 1].mean())
+        X = df.copy()
+        X[feature] = val
+        y = model.predict_proba(X)
+        PDF[1].append(y[:, 1].mean())
     return PDF
 
 
@@ -50,6 +48,7 @@ def PDP_plot(PDF, feature):
         PDP_plot_2D(PDF, feature)
     else:
         PDP_plot_1D(PDF, feature)
+
 
 def PDP_plot_2D(PDF, feature):
     """Plot the 2D Partial Dependence Plot (PDP) for two features."""
@@ -63,6 +62,7 @@ def PDP_plot_2D(PDF, feature):
     ax.set_zlabel('Average Predicted Probability')
     plt.title(f'Partial Dependence Plot for {feature[0]} and {feature[1]}')
     plt.show()
+
 
 def PDP_plot_1D(PDF, feature):
     """Plot the 1D Partial Dependence Plot (PDP) for a single feature."""
