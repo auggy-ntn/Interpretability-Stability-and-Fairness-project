@@ -1,9 +1,63 @@
 [project]
-name = "02-interpretability-stability-fairness"
+name = "interpretability-stability-fairness"
 version = "0.1.0"
-description = "Add your description here"
+description = "Exploring interpretability, stability, and fairness in machine learning models. Final project for the Interpretability, Stability and Fairness course from the Data Science & AI for Business MScT at X-HEC."
 readme = "README.md"
-requires-python = ">=3.13"
-dependencies = [
-    "seaborn>=0.13.2",
+authors = [
+    { name = "Augustin Naton", email = "augustin.naton@gmail.com" },
+    { name = "Your Name", email = "your.email@example.com" }
 ]
+requires-python = ">=3.13"
+
+# Runtime dependencies
+dependencies = [
+    "lime>=0.2.0.1",
+    "matplotlib>=3.10.6",
+    "numpy>=2.3.3",
+    "pandas>=2.3.2",
+    "scikit-learn>=1.7.2",
+    "seaborn>=0.13.2",
+    "shap>=0.48.0",
+]
+
+# Optional dependencies for development
+[dependency-groups]
+dev = [
+    "ipykernel>=6.30.1",
+    "pip>=25.2",
+    "ruff>=0.13.1",
+]
+
+# URLs for the project
+[project.urls]
+repository = "https://github.com/auggy-ntn/Interpretability-Stability-and-Fairness-project/network/dependencies"
+
+# Build system requirements
+[build-system]
+requires = ["setuptools>=65", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*", "models*", "constants*"]
+
+
+###### Configuration for Ruff linter and formatter ######
+[tool.ruff]
+extend-include = ["*.py", "*.ipynb"]
+line-length = 88
+indent-width = 4
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle (errors)
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
