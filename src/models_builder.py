@@ -20,7 +20,7 @@ class LinearSurrogate:
 
     def plot_interpretation(self, features, max_features=10):
         coef = self.get_coefficients()
-        indices = np.argsort(coef)
+        indices = np.argsort(np.abs(coef))
         indices = indices[-max_features:]
 
         plt.figure(figsize=(10, 6))
