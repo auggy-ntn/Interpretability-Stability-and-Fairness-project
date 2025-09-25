@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, StandardScaler
 
-import constants as cst
+import constants.column_names as cst
 
 
 def get_preprocessed_data(
