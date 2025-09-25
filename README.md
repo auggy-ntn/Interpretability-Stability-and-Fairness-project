@@ -16,7 +16,7 @@ git clone https://github.com/auggy-ntn/Interpretability-Stability-and-Fairness-p
 
 2. In the project's workspace run the following command to synchronize your environment with the project's development requirements:
 ```zsh
-uc sync --dev
+uv sync --dev
 ```
 You are all set!
 
