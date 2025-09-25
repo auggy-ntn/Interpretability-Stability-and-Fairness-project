@@ -1,3 +1,17 @@
+from sklearn.metrics import precision_recall_curve
+from sklearn.metrics import (
+    accuracy_score,
+    average_precision_score,
+    classification_report,
+    confusion_matrix,
+    f1_score,
+    matthews_corrcoef,
+    precision_score,
+    recall_score,
+    roc_auc_score,
+)
+from sklearn.utils.class_weight import compute_class_weight
+from sklearn.model_selection import train_test_split
 import os
 import pickle
 import time
@@ -29,7 +43,6 @@ print(f"   - Memory usage reduced by using float32/int32")
 
 # Split data into train and test sets
 print("📊 Splitting data into train/test sets...")
-from sklearn.model_selection import train_test_split
 
 X_train, X_test, y_train, y_test = train_test_split(
     X,
@@ -47,7 +60,6 @@ print(f"   - Test set class distribution: {np.bincount(y_test)}")
 # Optimized XGBoost model with maximum resource utilization
 print("\n🎯 Training optimized XGBoost model...")
 # Calculate class weights for imbalance handling
-from sklearn.utils.class_weight import compute_class_weight
 
 class_weights = compute_class_weight("balanced", classes=np.unique(y_train), y=y_train)
 class_weight_dict = {0: class_weights[0], 1: class_weights[1]}
@@ -127,24 +139,11 @@ print(f"💾 Final memory usage: {psutil.virtual_memory().percent}%")
 
 # Model Evaluation on TEST SET
 print("\n📊 Model Evaluation Metrics (TEST SET):")
-from sklearn.metrics import (
-    accuracy_score,
-    average_precision_score,
-    classification_report,
-    confusion_matrix,
-    f1_score,
-    matthews_corrcoef,
-    precision_score,
-    recall_score,
-    roc_auc_score,
-)
 
 # Get predictions and optimize threshold on TEST SET
 y_pred_proba_test = prob_predictions_test[:, 1]  # Probability of positive class
 
 # Optimize threshold for better balance using TEST SET
-from sklearn.metrics import precision_recall_curve
-
 precision, recall, thresholds = precision_recall_curve(y_test, y_pred_proba_test)
 
 # Find threshold that maximizes F1 score
