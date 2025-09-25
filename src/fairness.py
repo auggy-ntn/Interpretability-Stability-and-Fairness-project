@@ -28,7 +28,7 @@ def get_points_for_partial_dependance(df, feature, num_points=10):
     max_val = feature_values.max()
     return pd.Series([min_val + i * (max_val - min_val) / (num_points - 1) for i in range(num_points)]), 'continuous'
 
-def fairness_partial_dependance_plot(df, model, feature, protected_attribute, n_points=10):
+def fairness_partial_dependance_plot(df, model, feature, protected_attribute, n_points=10, filename=None):
     """Generate a partial dependence plot for a given feature."""
 
     df_temp = df.copy()
@@ -49,4 +49,6 @@ def fairness_partial_dependance_plot(df, model, feature, protected_attribute, n_
     plt.xlabel(feature)
     plt.ylabel('Fairness Test Statistic (p-value)')
     plt.grid()
+    if filename:
+        plt.savefig(filename)
     plt.show()
