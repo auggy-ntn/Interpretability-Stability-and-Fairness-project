@@ -17,8 +17,9 @@ def PDF_values(df, model, feature):
     # Dual feature case
     if len(feature) == 2:
         feat1, feat2 = feature
-        feature_values_1 = df.unique_values(feat1)
-        feature_values_1 = np.sort(feature_values_1)
+        max1 = df[feat1].max()
+        min1 = df[feat1].min()
+        feature_values_1 = np.linspace(min1, max1, num=10)
         PDF = ([], [])
         for val1 in feature_values_1:
             df1 = df.copy()
@@ -30,8 +31,9 @@ def PDF_values(df, model, feature):
         return PDF
     
     # Single feature case
-    feature_values = df.unique_values(feature)
-    feature_values = np.sort(feature_values)
+    max = df[feature].max()
+    min = df[feature].min()
+    feature_values = np.linspace(min, max, num=10)
     PDF = ([], [])
     for val in feature_values:
         PDF[0].append(val)

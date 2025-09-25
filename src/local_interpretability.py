@@ -16,8 +16,9 @@ def ICE_plot(df, model, feature):
     """Plot the Individual Conditional Expectation (ICE) curves for a given feature."""
     for _, row in df.iterrows():
         X_row = row.to_frame().T
-        feature_values = df.unique_values(feature)
-        feature_values = np.sort(feature_values)
+        max = df[feature].max()
+        min = df[feature].min()
+        feature_values = np.linspace(min, max, num=10)
         feature_values, preds = ICE(model, feature, X_row, feature_values)
         plt.plot(feature_values, preds, alpha=0.3)
     plt.title(f'Individual Conditional Expectation (ICE) for {feature}')
