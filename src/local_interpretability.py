@@ -58,11 +58,6 @@ def plot_ice_subsampled(estimator, X, feature, *, subsample=200,
     plt.tight_layout()
     return disp
 
-    if title:
-        ax0.set_title(title)
-    plt.tight_layout()
-    return ax0
-
 
 def lime_interpreter(X_train):
     lime_explainer = LimeTabularExplainer(
