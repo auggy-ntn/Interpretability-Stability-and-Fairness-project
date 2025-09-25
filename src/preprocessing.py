@@ -55,22 +55,6 @@ def get_preprocessed_data(
     # Combine encoded features with the rest of the data
     df = pd.concat([df.drop(columns=cst.CATEGORICAL_COLUMNS), df_encoded], axis=1)
 
-    # Standardize numerical features
-    binary_col_names = cst.BINARY_COLUMNS + encoded_col_names.tolist()
-    binary_cols = df[binary_col_names]
-    continuous_cols = df.select_dtypes(include=np.number).drop(
-        columns=binary_col_names
-    )
-    scaler = StandardScaler()
-    scaled_continuous = pd.DataFrame(
-        scaler.fit_transform(continuous_cols),
-        columns=continuous_cols.columns,
-        index=df.index,
-    )
-
-    # Combine scaled continuous features with binary features
-    df = pd.concat([scaled_continuous, binary_cols], axis=1)
-
     # Rename columns
     df = df.rename(columns=cst.RENAMING_DICT)
 
