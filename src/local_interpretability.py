@@ -1,37 +1,67 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import shap
+from sklearn.inspection import PartialDependenceDisplay
 from lime.lime_tabular import LimeTabularExplainer
 
 
-def ICE(model, feature, X_row, feature_values):
-    preds = []
-    for val in feature_values:
-        X_temp = X_row.copy()
-        X_temp[feature] = val
-        y_pred = model.predict_proba(X_temp)[:, 1][0]
-        preds.append(y_pred)
-    return feature_values, preds
+def plot_ice(estimator, X, feature, *, centered=False,
+             target=None, grid_resolution=30, ax=None, title=None):
+    """
+    1D ICE curve(s). Use centered=True to plot centered ICE (cICE).
+
+    Note: sklearn plots ICE via kind='individual'; cICE is achieved by
+    passing 'centered=True'.
+    """
+    disp = PartialDependenceDisplay.from_estimator(
+        estimator,
+        X,
+        features=[feature],
+        kind="individual",
+        target=target,
+        grid_resolution=grid_resolution,
+        ax=ax,
+        centered=centered
+    )
+    if title:
+        disp.axes_[0, 0].set_title(title)
+    plt.tight_layout()
+    return disp
 
 
-def ICE_plot(df, model, feature):
-    """Plot the Individual Conditional Expectation (ICE) curves for a given feature."""
-    # select a subset of rows for clarity
-    df = df.copy()
-    if len(df) > 4:
-        df = df.sample(n=4, random_state=42)
-    for _, row in df.iterrows():
-        X_row = row.to_frame().T
-        max = df[feature].max()
-        min = df[feature].min()
-        feature_values = np.linspace(min, max, num=4)
-        feature_values, preds = ICE(model, feature, X_row, feature_values)
-        plt.plot(feature_values, preds, alpha=0.3)
-    plt.title(f"Individual Conditional Expectation (ICE) for {feature}")
-    plt.xlabel(feature)
-    plt.ylabel("Predicted Probability")
-    plt.grid()
-    plt.show()
+def plot_ice_subsampled(estimator, X, feature, *, subsample=200,
+                        random_state=0, centered=False, target=None,
+                        grid_resolution=50, alpha=0.15, linewidth=0.8, ax=None,
+                        title=None):
+    """
+    1D ICE with subsampling for readability.
+    `feature` can be a column name or index.
+    """
+    disp = PartialDependenceDisplay.from_estimator(
+        estimator,
+        X,
+        features=[feature],
+        kind="individual",   # ICE
+        subsample=subsample,
+        random_state=random_state,
+        centered=centered,
+        target=target,
+        grid_resolution=grid_resolution,
+        ax=ax,
+        line_kw={"alpha": alpha, "linewidth": linewidth},
+    )
+
+    ax0 = disp.axes_[0, 0]
+    if title:
+        ax0.set_title(title)
+
+    plt.tight_layout()
+    return disp
+
+    if title:
+        ax0.set_title(title)
+    plt.tight_layout()
+    return ax0
 
 
 def lime_interpreter(X_train):
@@ -62,7 +92,6 @@ def shap_interpretation(model, X_train, instance):
     shap_values = explainer(instance)
     shap.initjs()
     return shap_values
-
 
 
 def shap_plot(shap_values, plot_type="bar"):

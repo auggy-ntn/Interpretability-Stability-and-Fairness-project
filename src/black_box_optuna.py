@@ -143,13 +143,6 @@ train_time = time.time() - train_start
 prob_predictions_test = final_model.predict_proba(X_test)
 
 # Model Evaluation
-from sklearn.metrics import (
-    average_precision_score,
-    classification_report,
-    confusion_matrix,
-    matthews_corrcoef,
-    precision_recall_curve,
-)
 
 # Get predictions and optimize threshold
 y_pred_proba_test = prob_predictions_test[:, 1]
