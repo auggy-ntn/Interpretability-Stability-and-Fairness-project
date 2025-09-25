@@ -64,6 +64,7 @@ def shap_interpretation(model, X_train, instance):
     return shap_values
 
 
+
 def shap_plot(shap_values, plot_type="bar"):
     if plot_type == "bar":
         shap.plots.bar(shap_values)
