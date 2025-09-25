@@ -37,6 +37,7 @@ def get_preprocessed_data(
     df.dropna(inplace=True)
 
     # Separate features, predicted probabilities, predictions, and true labels
+    pct_afroamericans = df.pop("Pct_afro_american")
     prob = df.pop("Predicted probabilities")
     predictions = df.pop("Predictions")
     true_labels = df.pop("target")
@@ -73,4 +74,4 @@ def get_preprocessed_data(
     # Rename columns
     df = df.rename(columns=cst.RENAMING_DICT)
 
-    return df, prob, predictions, true_labels
+    return df, prob, predictions, true_labels, pct_afroamericans
