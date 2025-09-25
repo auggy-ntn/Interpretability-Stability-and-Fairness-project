@@ -55,9 +55,10 @@ def get_preprocessed_data(
     df = pd.concat([df.drop(columns=cst.CATEGORICAL_COLUMNS), df_encoded], axis=1)
 
     # Standardize numerical features
-    binary_cols = df[cst.BINARY_COLUMNS]
+    binary_col_names = cst.BINARY_COLUMNS + encoded_col_names.tolist()
+    binary_cols = df[binary_col_names]
     continuous_cols = df.select_dtypes(include=np.number).drop(
-        columns=cst.BINARY_COLUMNS
+        columns=binary_col_names
     )
     scaler = StandardScaler()
     scaled_continuous = pd.DataFrame(
