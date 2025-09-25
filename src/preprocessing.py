@@ -70,6 +70,6 @@ def get_preprocessed_data(
     df = pd.concat([scaled_continuous, binary_cols], axis=1)
 
     # Rename columns
-    df.rename(cst.RENAMING_DICT)
+    df = df.rename(columns=cst.RENAMING_DICT)
 
     return df, prob, predictions, true_labels
