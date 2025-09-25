@@ -13,8 +13,7 @@ from sklearn.metrics import (
 )
 
 # Add parent directory to path for imports
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from preprocessing import get_preprocessed_data
+from src.preprocessing import get_preprocessed_data
 
 def train_xgboost_optimal(X_train, X_test, y_train, y_test, verbose=True):
     """
@@ -61,22 +60,20 @@ def train_xgboost_optimal(X_train, X_test, y_train, y_test, verbose=True):
     model = xgb.XGBClassifier(
         n_jobs=n_cores,
         tree_method='hist',
-        grow_policy='lossguide',
-        max_bin=768,
-        subsample=0.9477443357082947,
-        colsample_bytree=0.7464202834952258,
-        colsample_bylevel=0.9251402267772648,
-        colsample_bynode=0.7878653321203397,
-        n_estimators=1000,
-        max_depth=7,
-        learning_rate=0.1795936234963652,
-        min_child_weight=4.969727693084857,
-        reg_alpha=0.016717049859161764,
-        reg_lambda=0.20221883106199293,
-        gamma=0.010739324463762273,
+        grow_policy='depthwise',
+        max_bin=1024,
+        subsample=0.9314508954969745,
+        colsample_bytree=0.6434463330876846,
+        colsample_bylevel=0.697433669715373,
+        colsample_bynode=0.8785609743632425,
+        n_estimators=300,
+        max_depth=8,
+        learning_rate=0.09922950378987389,
+        min_child_weight=7.276703826924767,
+        reg_alpha=0.10091490711774341,
+        reg_lambda=0.07133987005494649,
+        gamma=0.018486359772358876,
         scale_pos_weight=class_weight_dict[1]/class_weight_dict[0],
-        early_stopping_rounds=50,
-        eval_metric='auc',
         verbosity=0,
         random_state=42,
         enable_categorical=False,
@@ -97,7 +94,6 @@ def train_xgboost_optimal(X_train, X_test, y_train, y_test, verbose=True):
     
     if verbose:
         print(f"Model trained in {train_time:.2f} seconds")
-        print(f"Best iteration: {model.best_iteration}")
     
     # Make predictions
     y_pred_proba = model.predict_proba(X_test)[:, 1]
@@ -157,12 +153,9 @@ os.environ['MKL_NUM_THREADS'] = str(n_cores)
 os.environ['NUMEXPR_NUM_THREADS'] = str(n_cores)
 
 if __name__ == "__main__":
-    print(f"Using {n_cores} CPU cores")
-    print("Loading and preprocessing data...")
-
     # Load data
     data_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "dataproject2025.csv")
-    df, prob, predictions, true_labels = get_preprocessed_data(path=data_path)
+    df, prob, predictions, true_labels, _ = get_preprocessed_data(path=data_path)
 
     # Convert to numpy arrays
     X = df.values.astype(np.float32)
@@ -173,36 +166,22 @@ if __name__ == "__main__":
         X, y, test_size=0.2, random_state=42, stratify=y
     )
 
-    print(f"Training set: {X_train.shape[0]:,} samples")
-    print(f"Test set: {X_test.shape[0]:,} samples")
-
     # Train model using the function
     model, y_pred_proba, y_pred, optimal_threshold, metrics = train_xgboost_optimal(
-        X_train, X_test, y_train, y_test, verbose=True
+        X_train, X_test, y_train, y_test, verbose=False
     )
 
-    print(f"\nModel Performance:")
+    # Print essential results
     print(f"Accuracy: {metrics['accuracy']:.4f}")
     print(f"Precision: {metrics['precision']:.4f}")
     print(f"Recall: {metrics['recall']:.4f}")
     print(f"F1-Score: {metrics['f1']:.4f}")
     print(f"ROC-AUC: {metrics['roc_auc']:.4f}")
-    print(f"Average Precision: {metrics['avg_precision']:.4f}")
-    print(f"MCC: {metrics['mcc']:.4f}")
-    print(f"Specificity: {metrics['specificity']:.4f}")
-    print(f"Sensitivity: {metrics['sensitivity']:.4f}")
-
-    print(f"\nConfusion Matrix:")
+    
     cm = metrics['confusion_matrix']
-    print(f"TN: {cm[0,0]:,}  FP: {cm[0,1]:,}")
-    print(f"FN: {cm[1,0]:,}  TP: {cm[1,1]:,}")
-
-    print(f"\nOptimal threshold: {optimal_threshold:.4f}")
+    print(f"Confusion Matrix - TN: {cm[0,0]:,}  FP: {cm[0,1]:,}  FN: {cm[1,0]:,}  TP: {cm[1,1]:,}")
 
     # Save model
     os.makedirs('models', exist_ok=True)
-    model_filename = 'models/black_box_xgboost.pkl'
-    joblib.dump(model, model_filename)
-    print(f"Model saved as '{model_filename}'")
-
-    print(f"Training completed in {metrics['train_time']:.2f} seconds")
+    joblib.dump(model, 'models/black_box_xgboost.pkl')
+    print("Model saved to models/black_box_xgboost.pkl")

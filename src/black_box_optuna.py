@@ -16,7 +16,7 @@ os.environ['OMP_NUM_THREADS'] = str(n_cores)
 os.environ['MKL_NUM_THREADS'] = str(n_cores)
 os.environ['NUMEXPR_NUM_THREADS'] = str(n_cores)
 start_time = time.time()
-df, prob, predictions, true_labels = get_preprocessed_data()
+df, prob, predictions, true_labels, _ = get_preprocessed_data()
 
 # Convert to numpy arrays
 X = df.values.astype(np.float32)
@@ -39,7 +39,7 @@ def objective(trial):
     
     # Suggest hyperparameters
     params = {
-        'n_jobs': n_cores,
+        'n_jobs': 1,
         'tree_method': 'gpu_hist',  # Use GPU for much faster training
         'gpu_id': 0,  # Use first GPU
         'grow_policy': trial.suggest_categorical('grow_policy', ['depthwise', 'lossguide']),
@@ -123,6 +123,7 @@ best_params['n_estimators'] = 300
 best_params['verbosity'] = 0
 best_params['tree_method'] = 'gpu_hist'  # Use GPU for final model
 best_params['gpu_id'] = 0  # Use first GPU
+best_params['n_jobs'] = 1  # Use fewer CPU threads when using GPU
 
 
 # Create final model
