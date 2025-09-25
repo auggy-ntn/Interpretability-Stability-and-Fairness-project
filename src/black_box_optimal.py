@@ -164,6 +164,7 @@ os.environ["MKL_NUM_THREADS"] = str(n_cores)
 os.environ["NUMEXPR_NUM_THREADS"] = str(n_cores)
 
 if __name__ == "__main__":
+    print("Loading data...")
     # Load data
     data_path = os.path.join(
         os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
@@ -181,10 +182,13 @@ if __name__ == "__main__":
         X, y, test_size=0.2, random_state=42, stratify=y
     )
 
+    print("Training model...")
     # Train model using the function
     model, y_pred_proba, y_pred, optimal_threshold, metrics = train_xgboost_optimal(
         X_train, X_test, y_train, y_test, verbose=False
     )
+
+    print("Evaluating model...")
 
     # Print essential results
     print(f"Accuracy: {metrics['accuracy']:.4f}")
