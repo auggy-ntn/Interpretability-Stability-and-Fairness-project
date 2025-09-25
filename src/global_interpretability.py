@@ -1,7 +1,5 @@
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
-
 
 
 def PDF_values(df, model, feature):
@@ -11,7 +9,8 @@ def PDF_values(df, model, feature):
         model: A trained model with a predict_proba method.
         feature (str or tuple): The feature(s) for which to compute the PDF.
     Returns:
-        tuple: containing the unique feature values and their corresponding average predicted probabilities.
+        tuple: containing the unique feature values and their corresponding
+        average predicted probabilities.
     """
     # ATTENTION: models MUST have a predict_proba method
     # Dual feature case
@@ -25,11 +24,11 @@ def PDF_values(df, model, feature):
             df1 = df.copy()
             df1[feat1] = val1
             pdf = PDF_values(df1, model, feat2)
-            for val2, prob in zip(pdf[0], pdf[1]):
+            for val2, prob in zip(pdf[0], pdf[1], strict=False):
                 PDF[0].append((val1, val2))
                 PDF[1].append(prob)
         return PDF
-    
+
     # Single feature case
     max = df[feature].max()
     min = df[feature].min()
@@ -55,24 +54,24 @@ def PDP_plot(df, model, feature):
 
 def PDP_plot_2D(PDF, feature):
     """Plot the 2D Partial Dependence Plot (PDP) for two features."""
-    X, Y = zip(*PDF[0])
+    X, Y = zip(*PDF[0], strict=False)
     Z = PDF[1]
     fig = plt.figure(figsize=(10, 8))
-    ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(X, Y, Z, c='r', marker='o')
+    ax = fig.add_subplot(111, projection="3d")
+    ax.scatter(X, Y, Z, c="r", marker="o")
     ax.set_xlabel(feature[0])
     ax.set_ylabel(feature[1])
-    ax.set_zlabel('Average Predicted Probability')
-    plt.title(f'Partial Dependence Plot for {feature[0]} and {feature[1]}')
+    ax.set_zlabel("Average Predicted Probability")
+    plt.title(f"Partial Dependence Plot for {feature[0]} and {feature[1]}")
     plt.show()
 
 
 def PDP_plot_1D(PDF, feature):
     """Plot the 1D Partial Dependence Plot (PDP) for a single feature."""
     plt.figure(figsize=(8, 6))
-    plt.plot(PDF[0], PDF[1], marker='o')
-    plt.title(f'Partial Dependence Plot for {feature}')
+    plt.plot(PDF[0], PDF[1], marker="o")
+    plt.title(f"Partial Dependence Plot for {feature}")
     plt.xlabel(feature)
-    plt.ylabel('Average Predicted Probability')
+    plt.ylabel("Average Predicted Probability")
     plt.grid()
     plt.show()
