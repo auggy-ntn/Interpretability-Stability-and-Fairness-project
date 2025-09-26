@@ -16,10 +16,7 @@ def PI(df, model, features, pm, y_true):
     y_pred = model.predict_proba(df)[:, 1]
     pm_model = pm(y_true, y_pred)
     n = len(features)
-    lim = 3
     for i, feat in enumerate(features):
-        if i>=lim:
-            break
         temp_df = df.copy()
         col = temp_df[feat]
         col_shuffled = col.sample(frac=1, random_state=42).reset_index(drop=True)
@@ -29,8 +26,6 @@ def PI(df, model, features, pm, y_true):
         importance = pm_shuffled - pm_model
         res.append(importance)
         print(f"Processed feature {i}/{n}: {feat}, Importance: {importance}")
-    if lim<n:
-        return res, features[:lim]
     return res, features
 
 
