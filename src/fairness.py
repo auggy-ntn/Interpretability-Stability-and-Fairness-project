@@ -15,7 +15,7 @@ def statistical_parity(df, feature, target):
 def fairness_test_statistic(df, model, protected_attribute):
     """Calculate the fairness test statistic (SP or CSP) for a given feature."""
     preds = model.predict(df)
-    contingency_table = pd.crosstab(df[protected_attribute], preds)
+    contingency_table = pd.crosstab(protected_attribute, preds)
     chi2, p, dof, expected = chi2_contingency(contingency_table)
     return p
 
@@ -52,3 +52,33 @@ def fairness_partial_dependance_plot(df, model, feature, protected_attribute, n_
     if filename:
         plt.savefig(filename)
     plt.show()
+
+def fairness_partial_dependance_plots(df, model, protected_attribute, n_points=10, file_dir=None, threshold=.05):
+    """Generate a partial dependence plot for a given feature."""
+
+    for feature in df.columns:
+        df_temp = df.copy()
+        points, mode = get_points_for_partial_dependance(df, feature, n_points)
+        p_values = []
+        for point in points:
+            df_temp[feature] = point
+            p_value = fairness_test_statistic(df_temp, model, protected_attribute)
+            p_values.append(p_value)
+
+        plt.figure()
+        fig, ax = plt.subplots(figsize=(8, 6))
+        plt.title(f'Partial Dependence Plot for {feature}')
+        if mode == 'continuous':
+            plt.plot(points, p_values)
+        else:
+            plt.bar(points, p_values, align='center')
+        if max(p_values) >= threshold:
+            plt.plot([points.min(), points.max()], [threshold, threshold], 'r--', label='Significance Threshold')
+
+        plt.xlabel(feature)
+        plt.ylabel('Fairness Test Statistic (p-value)')
+        plt.grid()
+        if file_dir:
+            plt.savefig(f'{file_dir}/partial_dependence_{feature}.png')
+        if max(p_values) >= threshold:
+            plt.show()
