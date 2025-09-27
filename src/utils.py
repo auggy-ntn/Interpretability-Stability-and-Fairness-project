@@ -21,3 +21,9 @@ def random_binary(column):
     ps = column / 100.0 if column.max() > 1 else column
     flags = np.random.random_sample(column.shape) < ps
     return flags
+
+def over_pct_binary(column, p=.5):
+    ps = column / 100.0 if column.max() > 1 else column
+    p = p / 100.0 if p > 1 else p
+    flags = (ps >= p).astype(int)
+    return flags
