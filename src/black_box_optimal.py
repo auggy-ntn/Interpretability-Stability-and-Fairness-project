@@ -171,7 +171,7 @@ if __name__ == "__main__":
         "data",
         "dataproject2025.csv",
     )
-    df, prob, predictions, true_labels, _ = get_preprocessed_data(path=data_path)
+    df, prob, predictions, true_labels, _ = get_preprocessed_data(path=data_path, scale=True)
 
     # Convert to numpy arrays
     X = df.values.astype(np.float32)
