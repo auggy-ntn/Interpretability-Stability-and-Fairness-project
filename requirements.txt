@@ -377,6 +377,11 @@ numpy==2.3.3 \
     #   seaborn
     #   shap
     #   tifffile
+    #   xgboost
+nvidia-nccl-cu12==2.28.3 ; platform_machine != 'aarch64' and sys_platform == 'linux' \
+    --hash=sha256:79cf0412094e4a552889e5cb7757d92c010ead557ec722c5eebe6a94b1d8681c \
+    --hash=sha256:85144f2197e81148e18f3ffd28a30d78b5046844877630d2710a1b22669a6e46
+    # via xgboost
 packaging==25.0 \
     --hash=sha256:29572ef2b1f17581046b3a2227d5c611fb25ec70ca1ba8554b24b0e69331a484 \
     --hash=sha256:d443872c98d677bf60f6a1f2f8c1cb748e8fe762d2bf9d3148b5599295b0fc4f
@@ -663,6 +668,7 @@ scipy==1.16.2 \
     #   scikit-image
     #   scikit-learn
     #   shap
+    #   xgboost
 seaborn==0.13.2 \
     --hash=sha256:636f8336facf092165e27924f223d3c62ca560b1f2bb5dff7ab7fad265361987 \
     --hash=sha256:93e60a40988f4d65e9f4885df477e2fdaff6b73a9ded434c1ab356dd57eefff7
@@ -739,3 +745,13 @@ wcwidth==0.2.14 \
     --hash=sha256:4d478375d31bc5395a3c55c40ccdf3354688364cd61c4f6adacaa9215d0b3605 \
     --hash=sha256:a7bb560c8aee30f9957e5f9895805edd20602f2d7f720186dfd906e82b4982e1
     # via prompt-toolkit
+xgboost==3.0.5 \
+    --hash=sha256:1a57a0d64a06b596992b664fe17dd1f9782138c6e35ad8fb6355e19a359fa50f \
+    --hash=sha256:40c324c329bf74f44571cdafb7aa7435366309d76ec14b3e16874862aeb14351 \
+    --hash=sha256:660774249d28a729ba8d22dd3d2c048c56e58f65a683b25ef3252e3383fe956f \
+    --hash=sha256:a03210a3e54c9e543f480db9636fee57247cfcd1ae850b353aeac59eea5ca350 \
+    --hash=sha256:c580c82500ad566d927581381550561300492c0bc9c143b2e5be208d16f093d1 \
+    --hash=sha256:d0fe44aaca76e9c4598d3be98ae94661aa53e4c4ceb161dc7183258f0e6fc138 \
+    --hash=sha256:d7f57a04629b52bae91a80e6721b9cdd009b605827a9eca67953675292b4487e \
+    --hash=sha256:f974028c7a0c3ae51ef87e2900405436ddafff46452f6f334f5cc295e921429b
+    # via interpretability-stability-fairness
