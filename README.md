@@ -1,7 +1,26 @@
+# Credit scoring - Interpretability, Stability and Fairness course final project
 
-### Installation & Usage
+This GitHub repository contains the code for the final project of the Interpretability, Stability and Fairness course from the Data Science and AI MScT at X-HEC.
 
-#### Development
+The objective of this project is to apply to methods seen in class to study the interpretabililty, stability and fairness of an ML model trained on a credit scoring dataset.
+
+## Repository structure
+```
+project/
+├── data/                 # Raw and processed datasets
+├── notebooks/            # Jupyter notebooks for steps
+├── src/                  # Source code for model training and useful functions
+├── models/               # Saved trained models
+├── results/              # Results, figures, and outputs
+├── requirements.txt      # Python dependencies
+└── pyproject.toml
+```
+
+
+
+## Installation & Usage
+
+### Development
 To reproduce the development environment, follow these steps:
 
 0. **(Prerequisite)** Have ```uv``` installed. See [the project's website](https://docs.astral.sh/uv/) for more information. In your terminal (MacOS and Linux users), run 
