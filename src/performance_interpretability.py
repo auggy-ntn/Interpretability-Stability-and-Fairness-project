@@ -16,10 +16,8 @@ def PI(df, model, features, pm, y_true):
     y_pred = model.predict_proba(df)[:, 1]
     pm_model = pm(y_true, y_pred)
     n = len(features)
-    lim = 3
+    
     for i, feat in enumerate(features):
-        if i>=lim:
-            break
         temp_df = df.copy()
         col = temp_df[feat]
         col_shuffled = col.sample(frac=1, random_state=42).reset_index(drop=True)
@@ -28,24 +26,36 @@ def PI(df, model, features, pm, y_true):
         pm_shuffled = pm(y_true, y_pred)
         importance = pm_shuffled - pm_model
         res.append(importance)
-        print(f"Processed feature {i}/{n}: {feat}, Importance: {importance}")
-    if lim<n:
-        return res, features[:lim]
+        print(f"Processed feature {i+1}/{n}: {feat}, Importance: {importance:.4f}")
+    
     return res, features
 
 
 def PI_plot(df, model, features, pm, y_true):
     importances, new_features = PI(df, model, features, pm, y_true)
     features = new_features
+    
+    # Convert to absolute values and calculate percentages
+    abs_importances = np.abs(importances)
+    total_importance = np.sum(abs_importances)
+    percentages = (abs_importances / total_importance) * 100
+    
     importance_df = pd.DataFrame({
         'Feature': features,
-        'Importance': importances
-    }).sort_values(by='Importance', ascending=False)
+        'Importance': importances,
+        'Percentage': percentages
+    }).sort_values(by='Importance', ascending=True)
 
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(12, 6))
     importance_df = importance_df.head(10)
-    sns.barplot(x='Importance', y='Feature', data=importance_df, palette='viridis')
-    plt.title('Permutation Importance of Features')
-    plt.xlabel('Importance')
+    sns.barplot(x='Percentage', y='Feature', data=importance_df, palette='viridis')
+    plt.title('Permutation Importance of Features (% of Total Contribution)')
+    plt.xlabel('Percentage of Total Contribution (%)')
     plt.ylabel('Feature')
     plt.show()
+    
+    # Print the percentages
+    print("\nTop 10 Features by Permutation Importance:")
+    print("=" * 50)
+    for _, row in importance_df.head(10).iterrows():
+        print(f"{row['Feature']:<30} {row['Percentage']:>6.2f}%")
