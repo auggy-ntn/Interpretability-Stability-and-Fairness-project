@@ -1,12 +1,22 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import shap
-from sklearn.inspection import PartialDependenceDisplay
+from IPython.display import display
 from lime.lime_tabular import LimeTabularExplainer
+from sklearn.inspection import PartialDependenceDisplay
 
 
-def plot_ice(estimator, X, feature, *, centered=False,
-             target=None, grid_resolution=30, ax=None, title=None):
+def plot_ice(
+    estimator,
+    X,
+    feature,
+    *,
+    centered=False,
+    target=None,
+    grid_resolution=30,
+    ax=None,
+    title=None,
+):
     """
     1D ICE curve(s). Use centered=True to plot centered ICE (cICE).
 
@@ -21,7 +31,7 @@ def plot_ice(estimator, X, feature, *, centered=False,
         target=target,
         grid_resolution=grid_resolution,
         ax=ax,
-        centered=centered
+        centered=centered,
     )
     if title:
         disp.axes_[0, 0].set_title(title)
@@ -29,10 +39,21 @@ def plot_ice(estimator, X, feature, *, centered=False,
     return disp
 
 
-def plot_ice_subsampled(estimator, X, feature, *, subsample=200,
-                        random_state=0, centered=False, target=None,
-                        grid_resolution=50, alpha=0.15, linewidth=0.8, ax=None,
-                        title=None):
+def plot_ice_subsampled(
+    estimator,
+    X,
+    feature,
+    *,
+    subsample=200,
+    random_state=0,
+    centered=False,
+    target=None,
+    grid_resolution=50,
+    alpha=0.15,
+    linewidth=0.8,
+    ax=None,
+    title=None,
+):
     """
     1D ICE with subsampling for readability.
     `feature` can be a column name or index.
@@ -41,7 +62,7 @@ def plot_ice_subsampled(estimator, X, feature, *, subsample=200,
         estimator,
         X,
         features=[feature],
-        kind="individual",   # ICE
+        kind="individual",  # ICE
         subsample=subsample,
         random_state=random_state,
         centered=centered,
@@ -82,16 +103,16 @@ def lime_interpretation(lime_explainer, model, instance, show=True, filename=Non
     return lime_explanation
 
 
-def shap_interpretation(model, X_train, instance):
-    explainer = shap.Explainer(model, X_train)
-    shap_values = explainer(instance)
+def shap_plot(model, data, plot_type="bar"):
+    # Compute SHAP values
+    explainer = shap.TreeExplainer(model)
+    shap_values = explainer(data)
     shap.initjs()
-    return shap_values
 
-
-def shap_plot(shap_values, plot_type="bar"):
+    # Plot SHAP values
     if plot_type == "bar":
         shap.plots.bar(shap_values)
     elif plot_type == "beeswarm":
         shap.plots.beeswarm(shap_values)
-    shap.plots.initjs()
+    elif plot_type == "force":
+        display(shap.force_plot(explainer.expected_value, shap_values.values[0], data))
