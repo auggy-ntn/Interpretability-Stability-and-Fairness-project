@@ -17,7 +17,8 @@ def quantile_binary(column, p):
     flags = (column >= threshold).astype(int)
     return flags
 
-def random_binary(column):
+def random_binary(column, seed=2025):
+    np.random.seed(seed)
     ps = column / 100.0 if column.max() > 1 else column
     flags = np.random.random_sample(column.shape) < ps
     return flags
