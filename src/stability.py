@@ -141,12 +141,12 @@ def plot_stability_results(results):
     ax1.tick_params(axis='y', labelcolor=color)
     ax1.grid(True)
 
-    ax2 = ax1.twinx()
-    color = 'tab:blue'
-    ax2.set_ylabel('ROC-AUC', color=color)
-    ax2.plot(fractions, auc_values, marker='s', color=color, label='AUC')
-    ax2.tick_params(axis='y', labelcolor=color)
-    ax2.set_ylim(0, 1)
+    # ax2 = ax1.twinx()
+    # color = 'tab:blue'
+    # ax2.set_ylabel('ROC-AUC', color=color)
+    # ax2.plot(fractions, auc_values, marker='s', color=color, label='AUC')
+    # ax2.tick_params(axis='y', labelcolor=color)
+    # ax2.set_ylim(0, 1)
 
     fig.tight_layout()
     plt.title('Global Distance (Prev) and AUC Evolution')
@@ -163,12 +163,12 @@ def plot_stability_results(results):
     ax1.tick_params(axis='y', labelcolor=color)
     ax1.grid(True)
 
-    ax2 = ax1.twinx()
-    color = 'tab:blue'
-    ax2.set_ylabel('ROC-AUC', color=color)
-    ax2.plot(fractions, auc_values, marker='s', color=color, label='AUC')
-    ax2.tick_params(axis='y', labelcolor=color)
-    ax2.set_ylim(0, 1)
+    # ax2 = ax1.twinx()
+    # color = 'tab:blue'
+    # ax2.set_ylabel('ROC-AUC', color=color)
+    # ax2.plot(fractions, auc_values, marker='s', color=color, label='AUC')
+    # ax2.tick_params(axis='y', labelcolor=color)
+    # ax2.set_ylim(0, 1)
 
     fig.tight_layout()
     plt.title('Global Distance (First) and AUC Evolution')
